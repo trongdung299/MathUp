@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mathup-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mathup
+      POSTGRES_USER: mathup
+      POSTGRES_PASSWORD: mathup
+    ports:
+      - "5433:5432"
+    volumes:
+      - mathup_pgdata:/var/lib/postgresql/data
+
+volumes:
+  mathup_pgdata:
