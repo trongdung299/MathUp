@@ -1,5 +1,6 @@
 package com.mathup.auth.dto;
 
+import com.mathup.user.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,4 +12,5 @@ public class AuthResponse {
     private Long userId;
     private String email;
     private String fullName;
+    private Role role;
 }

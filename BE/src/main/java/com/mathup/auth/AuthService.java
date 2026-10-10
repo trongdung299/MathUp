@@ -3,6 +3,7 @@ package com.mathup.auth;
 import com.mathup.auth.dto.AuthResponse;
 import com.mathup.auth.dto.LoginRequest;
 import com.mathup.auth.dto.RegisterRequest;
+import com.mathup.user.Role;
 import com.mathup.user.User;
 import com.mathup.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
+                .role(Role.STUDENT)
                 .build();
         user = userRepository.save(user);
 
@@ -45,10 +47,11 @@ public class AuthService {
 
     private AuthResponse toAuthResponse(User user) {
         return AuthResponse.builder()
-                .token(jwtService.generateToken(user.getId()))
+                .token(jwtService.generateToken(user))
                 .userId(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
+                .role(user.getRole())
                 .build();
     }
 }

@@ -1,48 +1,34 @@
 package com.mathup.auth;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import javax.crypto.SecretKey;
+import com.mathup.user.User;
+import java.time.Instant;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
 
-    private final SecretKey key;
+    private final JwtEncoder jwtEncoder;
     private final long expirationMs;
 
-    public JwtService(
-            @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-ms}") long expirationMs) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    public JwtService(JwtEncoder jwtEncoder, @Value("${app.jwt.expiration-ms}") long expirationMs) {
+        this.jwtEncoder = jwtEncoder;
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(Long userId) {
-        Date now = new Date();
-        return Jwts.builder()
-                .subject(String.valueOf(userId))
+    public String generateToken(User user) {
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject(String.valueOf(user.getId()))
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + expirationMs))
-                .signWith(key)
-                .compact();
-    }
-
-    public Long parseUserId(String token) {
-        try {
-            String subject = Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .getSubject();
-            return Long.valueOf(subject);
-        } catch (JwtException | IllegalArgumentException e) {
-            return null;
-        }
+                .expiresAt(now.plusMillis(expirationMs))
+                .claim(SecurityConfig.ROLE_CLAIM, user.getRole().name())
+                .build();
+        JwsHeader header = JwsHeader.with(SecurityConfig.JWT_ALGORITHM).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 }

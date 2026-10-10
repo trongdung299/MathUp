@@ -8,12 +8,15 @@ spring:
     password: ${DB_PASSWORD:mathup}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    # DBs created before Flyway was introduced already contain the V1 schema
+    baseline-on-migrate: true
 
 server:
   port: 8080
