@@ -1,5 +1,6 @@
 package com.mathup.submission;
 
+import com.mathup.submission.dto.AttemptResponse;
 import com.mathup.submission.dto.SubmissionRequest;
 import com.mathup.submission.dto.SubmissionResponse;
 import jakarta.validation.Valid;
@@ -20,6 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubmissionController {
 
     private final SubmissionService submissionService;
+
+    @PostMapping("/api/exams/{examId}/start")
+    public AttemptResponse start(@PathVariable Long examId, @AuthenticationPrincipal Jwt jwt) {
+        return submissionService.start(examId, userId(jwt));
+    }
 
     @PostMapping("/api/exams/{examId}/submissions")
     public ResponseEntity<SubmissionResponse> submit(
