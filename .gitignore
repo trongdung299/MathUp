@@ -1,5 +1,6 @@
 HELP.md
 target/
+/db/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -34,3 +35,22 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### AI agents / Claude / internal notes ###
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.agents/
+AGENTS.md
+skills-lock.json
+.cursor/
+BACKEND_PLAN.md
+
+### AI agents / Claude ###
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.agents/
+AGENTS.md
+skills-lock.json
+.cursor/

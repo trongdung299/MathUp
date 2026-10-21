@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mathup-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mathup
+      POSTGRES_USER: mathup
+      POSTGRES_PASSWORD: mathup
+    ports:
+      - "5433:5432"
+    volumes:
+      - mathup_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mathup -d mathup"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ./BE
+    container_name: mathup-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: mathup
+      DB_USER: mathup
+      DB_PASSWORD: mathup
+    ports:
+      - "8080:8080"
+
+volumes:
+  mathup_pgdata:
